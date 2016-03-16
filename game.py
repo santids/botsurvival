@@ -6,20 +6,18 @@ from pygame.locals import *
 from display import colors,drawing
 from hexboard import HexBoard
 from random import choice
+from settings import settings
 
-WIDTH = HEIGHT = 650
-FPS = 24
+
 KNUMS = [K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9]
-RADIUS = 25
-PAD = 30
-MAXTURNS = 100
+
 
 class Game:
     def __init__(self):
         pg.init()
-        self.screen = pg.display.set_mode((WIDTH,HEIGHT))
+        self.screen = pg.display.set_mode((settings.scr_width,settings.scr_height),settings.fullscreen)
         pg.display.set_caption('BotSurvival!')
-        self.screen.fill(colors.white)
+        self.screen.fill(settings.back_color)
         pg.display.update()
         self.clock = pg.time.Clock()
         
@@ -28,14 +26,14 @@ class Game:
     def restart(self):
         self.turn = 1
         self.gamealive = True
-        self.board = HexBoard(RADIUS,(10,10))
-        self.board.padding = PAD
+        self.board = HexBoard(settings.radius,(settings.map_size,settings.map_size))
+        self.board.padding = settings.padding
         self.draw_board()
         self.myloc = (3,3)
-        self.draw_tile(self.myloc,colors.cyan5)
+        self.draw_tile(self.myloc,settings.bot_color)
         pg.display.update()
         while self.gamealive:
-            deltaTime = self.clock.tick(FPS)
+            deltaTime = self.clock.tick(settings.fps)
             for event in pg.event.get():
                 if event.type == QUIT:
                     close()
@@ -47,7 +45,7 @@ class Game:
                     if event.key == K_r:
                         self.restart()
                         self.gamealive = False
-                    if event.key == K_ESC:
+                    if event.key == K_ESCAPE:
                         close()
         close()
         
@@ -56,10 +54,10 @@ class Game:
 
         self.myloc = choice(self.board.locs_around(self.myloc,filter=['obstacle']))
         self.draw_board()
-        self.draw_tile(self.myloc,colors.cyan5)
+        self.draw_tile(self.myloc,settings.bot_color)
         
         
-        if self.turn >= MAXTURNS:
+        if self.turn >= settings.max_turns:
             self.gamealive = False
             
     def draw_board(self):
@@ -68,15 +66,15 @@ class Game:
         
         for loc in self.board.alllocs:
             if self.board.loc_type(loc) == 'walk':
-                color = colors.gray6
+                color = settings.walk_color
             elif self.board.loc_type(loc) == 'obstacle':
-                color = colors.black
+                color = settings.obst_color
 
             self.draw_tile(loc,color)
             
     def draw_tile(self,loc,color):
         cpoint = self.board.centerPoint(loc)
-        hexa = drawing.hexagon(cpoint,RADIUS)
+        hexa = drawing.hexagon(cpoint,settings.radius)
         pg.draw.polygon(self.screen,color,hexa)
         pg.draw.lines(self.screen,colors.black,True,hexa,1)
     

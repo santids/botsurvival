@@ -1,6 +1,6 @@
 #Game module
 
-import sys, traceback
+import sys, traceback,random
 import pygame as pg
 from pygame.locals import *
 from display import colors,drawing
@@ -8,11 +8,13 @@ from hexboard import HexBoard
 import utils.vect2d as vect
 import numpy as np
 
+
 WIDTH = HEIGHT = 650
 FPS = 24
 KNUMS = [K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9]
-RADIUS = 25
+RADIUS = 20
 PAD = 30
+SIZE = 15
 
 class MapEditor:
     def __init__(self):
@@ -26,12 +28,16 @@ class MapEditor:
         self.restart()
 
     def restart(self):
-        self.turn = 1
+        self.color = 1
         self.gamealive = True
-        self.board = HexBoard(RADIUS,(10,10))
+        self.board = HexBoard(RADIUS,(SIZE,SIZE))
         self.board.padding = PAD
         self.draw_board()
         pg.display.update()
+        if len(sys.argv) == 2:
+            self.filename = sys.argv[1]
+        else:
+            self.filename = 'map'+str(random.randrange(9999))
         while self.gamealive:
             deltaTime = self.clock.tick(FPS)
             for event in pg.event.get():
@@ -40,11 +46,18 @@ class MapEditor:
                     sys.exit()
                 elif event.type == MOUSEBUTTONDOWN:
                     cpoint = self.board.centerPoint((3,3))
-                    print cpoint,event.pos,vect.dist(cpoint,event.pos)
                     for loc in self.board.alllocs:                        
                         if vect.dist(self.board.centerPoint(loc),event.pos) < RADIUS:
-                            self.board.map[loc] = 1
-                    print np.array2string(self.board.map,separator=',')
+                            self.board.map[loc] = self.color
+                elif event.type == KEYDOWN:
+                    if event.key == K_s:
+                        np.save('assets/maps/'+self.filename,self.board.map)
+                        
+                        print "Map Saved as",self.filename
+                    elif event.key == K_1:
+                        self.color = 0
+                    elif event.key == K_2:
+                        self.color = 1
                             
             self.draw_board()
             pg.display.update()
