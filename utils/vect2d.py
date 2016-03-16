@@ -1,4 +1,5 @@
 #Common 2d vector function apply to tupples
+from math import sqrt
 
 class Vect:
     def __init__((x,y)):
@@ -19,6 +20,11 @@ def suma(p1,p2):
     y = p1[1]+p2[1]
 
     return (x,y)
+def modulo(v):
+    return sqrt(v[0]*v[0]+v[1]*v[1])
+def dist(p1,p2):
+    """Distancia entre dos puntos"""
+    return modulo((p1[0]-p2[0],p1[1]-p2[1]))
 def isInsideRect(v,rect):
     """is the point v inside the rect ( 0,0,rect.x,rect.y)"""
     return v[0] < rect[0] and v[0]>= 0 and v[1] < rect[1] and v[1] >= 0
@@ -26,6 +32,6 @@ def isInsideRect(v,rect):
 
 if __name__ == '__main__':
     p1 = (1,1)
-    p2 = (50,50)
+    p2 = (2,2)
 
-    print isInsideRect(p1,p2)
+    print dist(p1,p2)
