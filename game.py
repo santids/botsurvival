@@ -29,7 +29,7 @@ class Game:
         self.board = HexBoard(settings.radius,(settings.map_size,settings.map_size))
         self.board.padding = settings.padding
         self.draw_board()
-        self.myloc = (3,3)
+        self.myloc = (6,3)
         self.draw_tile(self.myloc,settings.bot_color)
         pg.display.update()
         while self.gamealive:
@@ -55,6 +55,7 @@ class Game:
         self.myloc = choice(self.board.locs_around(self.myloc,filter=['obstacle']))
         self.draw_board()
         self.draw_tile(self.myloc,settings.bot_color)
+        self.draw_tile((3,3),settings.bot_color)
         
         
         if self.turn >= settings.max_turns:
@@ -66,9 +67,15 @@ class Game:
         
         for loc in self.board.alllocs:
             if self.board.loc_type(loc) == 'walk':
-                color = settings.walk_color
+                if loc[1] % 2 == 0:
+                    color = colors.gray8
+                else:
+                    color = settings.walk_color
             elif self.board.loc_type(loc) == 'obstacle':
                 color = settings.obst_color
+            
+
+                
 
             self.draw_tile(loc,color)
             
