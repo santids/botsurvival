@@ -1,6 +1,7 @@
 #Hexboard
 
 from math import sin,cos, pi
+from settings import settings
 import utils.vect2d as vect
 import numpy as np
 
@@ -16,17 +17,16 @@ class HexBoard:
         self.theight = (1.0+sin(1.0/6*pi))*radius
         self.twidth = 2*radius*cos(1.0/6*pi)
         self.size = size
-        self.map = np.asarray([[1,1,1,1,1,1,1,1,1,1],
-                     [1,0,0,0,0,0,0,0,0,1],
-                     [1,0,0,0,0,0,0,0,0,1],
-                     [1,0,0,0,0,0,0,0,0,1],
-                     [1,0,0,0,0,0,0,0,0,1],
-                     [1,0,0,0,0,0,0,0,0,1],
-                     [1,0,0,0,0,0,0,0,0,1],
-                     [1,0,0,0,0,0,0,0,0,1],
-                     [1,0,0,0,0,0,0,0,0,1],
-                     [1,1,1,1,1,1,1,1,1,1]])
-        self.alllocs = [(r,c) for r in xrange(size[0]) for c in xrange(size[1])]
+        try:
+            self.map = np.load(settings.map_src)
+            if self.size != self.map.shape:
+                self.size = self.map.shape
+                print 'WARNING: map size differente from expected'
+        except IOError:
+            print 'WARNING: no map file found'
+            self.map = np.zeros(size,dtype=int)
+            
+        self.alllocs = [(r,c) for r in xrange(self.size[0]) for c in xrange(self.size[1])]
         self.padding = 0
     
     def centerPoint(self,(row,col)):
