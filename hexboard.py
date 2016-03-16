@@ -4,6 +4,7 @@ from math import sin,cos, pi
 from settings import settings
 import utils.vect2d as vect
 import numpy as np
+from copy import copy
 
 
 _loctypes = {0:'walk',
@@ -30,6 +31,7 @@ class HexBoard:
         self.padding = 0
     
     def centerPoint(self,(row,col)):
+        """Return the surface point corresponding with the center of the given hextile"""
         x = 0
         y = 0
 
@@ -41,6 +43,7 @@ class HexBoard:
 
         return (x,y)
     def isValidLoc(self,loc):
+        """True if loc is inside map bounds"""
         return vect.isInsideRect(loc,self.size)
         
     def locs_around(self,loc,filter=None):
@@ -67,18 +70,44 @@ class HexBoard:
 
         return nl
     def loc_type(self,loc):
-        if self.map[loc] in _loctypes:
+        """return the type of the loc. o.w. return invalid"""
+        if self.isValidLoc(loc) and self.map[loc] in _loctypes:
             return _loctypes[self.map[loc]]
         else:
             return 'invalid'
+    def wdist(self,loc1,loc2,maxdepth=15,depth=0,d=None,yafui=[]):
+        yafui.append(loc1)
+        if d == None:
+            d=dict()
+        if loc1 == loc2:
+            return 0
+        if depth > maxdepth or not self.isValidLoc(loc1):
+            return int(1e3)
+        if loc1 in d:
+            return d[loc1]
+        around = [loc for loc in self.locs_around(loc1) if loc not in yafui]
+
+        try:
+            dists = [self.wdist(loc,loc2,maxdepth,depth+1,d,copy(yafui)) for loc in around]     
+            d[loc1] = 1+min(dists)
+            
+            return 1+min(dists)
+        
+        except RuntimeError:
+            return int(1e3)
+        except ValueError:
+            return int(1e3)
+
+
+        
         
     
 #test
 if __name__ == '__main__':
     
-    board = HexBoard(20,(10,10))
-    print board.locs_around((1,1),filter=['obstacle'])
-    print board.map[(0,0)]
+    board = HexBoard(20,(15,15))
+    print "walk dist",board.wdist((2,0),(3,14))
+    print board.locs_around((3,3))
     
                               
         
