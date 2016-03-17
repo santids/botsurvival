@@ -6,19 +6,17 @@ import utils.vect2d as vect
 import numpy as np
 from copy import copy
 import display.waveTexture as wt
-
+from random import randint
 
 _loctypes = {0:'water',
-             1:'walk',
-             2:'plains',
-             3:'hills',
-             4:'walk',
-             5:'mountain'
+             1:'plains',
+             2:'hills',
+             3:'mountain',
              }
 
 class HexBoard:
     
-
+    
     def __init__(self,radius,size):
         self.r = radius
         self.theight = (1.0+sin(1.0/6*pi))*radius
@@ -26,7 +24,7 @@ class HexBoard:
         self.size = size
         self.alllocs = [(r,c) for r in xrange(self.size[0]) for c in xrange(self.size[1])]
         self.padding = 0
-        self.map = wt.createWaveMap(size,5)
+        self.map = wt.createWaveMap(size,3,randint(0,2**10))
         """
         try:
             self.map = np.load(settings.map_src)
@@ -81,21 +79,14 @@ class HexBoard:
             nl = [loc for loc in nl if _loctypes[self.map[loc]]not in filter]
 
         return nl
+    
     def loc_type(self,loc):
         """return the type of the loc. o.w. return invalid"""
+        
         if self.isValidLoc(loc) and self.map[loc] in _loctypes:
             return _loctypes[self.map[loc]]
         else:
             return 'invalid'
-        
-    def wdist(self,loc1,loc2):
-        #Need further testing
-        dx = abs(loc2[1]-loc1[1])
-        dy = abs(loc2[0]-loc1[0])
-        l = [x for x in range(dy) if x%2==0]
-        if dx==0:
-            return dy
-        return dx+dy-min(dx,len(l))
 
     def createNormalMap(self):
         arr = np.random.normal(1.5,1.5,vect.div(self.size,2))
@@ -125,13 +116,33 @@ class HexBoard:
             self.size = arr.shape
 
         return arr
-        
-        
+    def toward(self,curr,target,filter=None):
+        options = self.locs_around(curr,filter)
+        dist = min([vect.dist(loc,target) for loc in options])
+        for loc in options:
+            if vect.dist(loc,target) == dist:
+                return loc
+    def mapCenter(self):
+        return vect.div(self.size,2)
+    
+#End of class definition
+    
+def wdist(loc1,loc2):
+    #Need further testing
+    dx = abs(loc2[1]-loc1[1])
+    dy = abs(loc2[0]-loc1[0])
+    l = [x for x in range(dy) if x%2==0]
+    if dx==0:
+        return dy
+    return dx+dy-min(dx,len(l))
+    
     
 #test
 if __name__ == '__main__':
-    board = HexBoard(8,(50,50))
-    print board.wdist((2,2),(3,4))
+    board = HexBoard(8,(51,51))
+    loc = (3,3)
+    print board.mapCenter()
+    
                               
         
         
