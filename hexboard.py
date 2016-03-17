@@ -1,6 +1,6 @@
 #Hexboard
 
-from math import sin,cos, pi
+from math import sin,cos, pi,ceil,floor
 from settings import settings
 import utils.vect2d as vect
 import numpy as np
@@ -75,28 +75,16 @@ class HexBoard:
             return _loctypes[self.map[loc]]
         else:
             return 'invalid'
-    def wdist(self,loc1,loc2,maxdepth=15,depth=0,d=None,yafui=[]):
-        yafui.append(loc1)
-        if d == None:
-            d=dict()
-        if loc1 == loc2:
-            return 0
-        if depth > maxdepth or not self.isValidLoc(loc1):
-            return int(1e3)
-        if loc1 in d:
-            return d[loc1]
-        around = [loc for loc in self.locs_around(loc1) if loc not in yafui]
-
-        try:
-            dists = [self.wdist(loc,loc2,maxdepth,depth+1,d,copy(yafui)) for loc in around]     
-            d[loc1] = 1+min(dists)
-            
-            return 1+min(dists)
         
-        except RuntimeError:
-            return int(1e3)
-        except ValueError:
-            return int(1e3)
+    def wdist(self,loc1,loc2):
+        #Need further testing
+        dx = abs(loc2[1]-loc1[1])
+        dy = abs(loc2[0]-loc1[0])
+        l = [x for x in range(dy) if x%2==0]
+        if dx==0:
+            return dy
+        return dx+dy-min(dx,len(l))
+        
 
 
         
@@ -104,10 +92,8 @@ class HexBoard:
     
 #test
 if __name__ == '__main__':
-    
-    board = HexBoard(20,(15,15))
-    print "walk dist",board.wdist((2,0),(3,14))
-    print board.locs_around((3,3))
+    board = HexBoard
+    print board.widst((3,3),(7,7))
     
                               
         
