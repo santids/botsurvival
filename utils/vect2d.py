@@ -20,6 +20,8 @@ def suma(p1,p2):
     y = p1[1]+p2[1]
 
     return (x,y)
+def div(v,n):
+    return (v[0]/n,v[1]/n)
 def modulo(v):
     return sqrt(v[0]*v[0]+v[1]*v[1])
 def dist(p1,p2):

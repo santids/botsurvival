@@ -66,13 +66,22 @@ class Game:
         color = colors.gray5
         
         for loc in self.board.alllocs:
+            #print self.board.map[loc]
             if self.board.loc_type(loc) == 'walk':
                 if loc[1] % 2 == 0:
-                    color = colors.gray8
+                    color = colors.green7
                 else:
                     color = settings.walk_color
             elif self.board.loc_type(loc) == 'obstacle':
                 color = settings.obst_color
+            elif self.board.loc_type(loc) == 'water':
+                color = colors.blue8
+            elif self.board.loc_type(loc) == 'hills':
+                color = colors.brown8
+            elif self.board.loc_type(loc) == 'plains':
+                color = colors.green4
+            elif self.board.loc_type(loc) == 'mountain':
+                color = colors.brown4
             
 
                 

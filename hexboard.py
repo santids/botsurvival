@@ -1,14 +1,20 @@
 #Hexboard
 
-from math import sin,cos, pi,ceil,floor
+from math import sin,cos, pi
 from settings import settings
 import utils.vect2d as vect
 import numpy as np
 from copy import copy
+import display.waveTexture as wt
 
 
-_loctypes = {0:'walk',
-             1:'obstacle'}
+_loctypes = {0:'water',
+             1:'walk',
+             2:'plains',
+             3:'hills',
+             4:'walk',
+             5:'mountain'
+             }
 
 class HexBoard:
     
@@ -18,6 +24,10 @@ class HexBoard:
         self.theight = (1.0+sin(1.0/6*pi))*radius
         self.twidth = 2*radius*cos(1.0/6*pi)
         self.size = size
+        self.alllocs = [(r,c) for r in xrange(self.size[0]) for c in xrange(self.size[1])]
+        self.padding = 0
+        self.map = wt.createWaveMap(size,5)
+        """
         try:
             self.map = np.load(settings.map_src)
             if self.size != self.map.shape:
@@ -26,9 +36,11 @@ class HexBoard:
         except IOError:
             print 'WARNING: no map file found'
             self.map = np.zeros(size,dtype=int)
+        """
+        
             
-        self.alllocs = [(r,c) for r in xrange(self.size[0]) for c in xrange(self.size[1])]
-        self.padding = 0
+
+        
     
     def centerPoint(self,(row,col)):
         """Return the surface point corresponding with the center of the given hextile"""
@@ -84,17 +96,42 @@ class HexBoard:
         if dx==0:
             return dy
         return dx+dy-min(dx,len(l))
+
+    def createNormalMap(self):
+        arr = np.random.normal(1.5,1.5,vect.div(self.size,2))
+        arr = np.repeat(arr,2,0)
+        arr = np.repeat(arr,2,1)
+        for loc in self.alllocs:
+            arr[loc] = min(max(round(arr[loc]),0),4)
+        return arr
+    def createBinomialMap(self):
+        arr = np.random.binomial(3,0.3,vect.div(self.size,3))
+        print np.mean(arr)
+        arr = np.repeat(arr,3,0)
+        arr = np.repeat(arr,3,1)
+
+        self.size = arr.shape
         
+        return arr
+    def createGeometricMap(self):
+        arr = np.random.geometric(0.35,vect.div(self.size,3))
+        arr = np.repeat(arr,3,0)
+        arr = np.repeat(arr,3,1)
+        for loc in self.alllocs:
+            arr[loc] = min(5,arr[loc])
+        print np.mean(arr)
+        if self.size != arr.shape:
+            print "WARNING: Unexpecte map size"
+            self.size = arr.shape
 
-
+        return arr
         
         
     
 #test
 if __name__ == '__main__':
-    board = HexBoard
-    print board.widst((3,3),(7,7))
-    
+    board = HexBoard(8,(50,50))
+    print board.wdist((2,2),(3,4))
                               
         
         
