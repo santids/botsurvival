@@ -4,7 +4,7 @@ from math import sqrt, sin
 vel = 50
 
 def onda(x,y,mult,time):
-    spread = 1.5
+    spread = 2
 
     ondas_array = [[0.05*mult,12*spread,-100,270],
                    [0.05*mult,5*spread,1700,-50],

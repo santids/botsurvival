@@ -8,17 +8,18 @@ class Settings(dict):
 
 settings = Settings({
     #game play
-    'max_turns':100,
-    'map_size':81,
+    'max_turns':500,
+    'map_size':20,
     'map_src':'assets/maps/default.npy',
+    'map_seed':216,
 
     #display
     'scr_width':1100,
     'scr_height':800,
-    'fullscreen':False,  #FULLSCREEN or 0
-    'radius':7,
+    'fullscreen':False , #FULLSCREEN or 0
+    'radius':15,
     'padding':30,
-    'fps':24,
+    'fps':60,
 
     #colors
     'back_color':colors.white,

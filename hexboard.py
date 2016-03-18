@@ -24,7 +24,7 @@ class HexBoard:
         self.size = size
         self.alllocs = [(r,c) for r in xrange(self.size[0]) for c in xrange(self.size[1])]
         self.padding = 0
-        self.map = wt.createWaveMap(size,3,randint(0,2**10))
+        self.map = wt.createWaveMap(size,3,settings.map_seed)
         """
         try:
             self.map = np.load(settings.map_src)
