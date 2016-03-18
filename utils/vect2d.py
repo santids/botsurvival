@@ -30,6 +30,10 @@ def dist(p1,p2):
 def isInsideRect(v,rect):
     """is the point v inside the rect ( 0,0,rect.x,rect.y)"""
     return v[0] < rect[0] and v[0]>= 0 and v[1] < rect[1] and v[1] >= 0
+def inverse(v):
+    return (v[0]*(-1),v[1]*(-1))
+def resta(p1,p2):
+    return suma(p1,inverse(p2))
 
 
 if __name__ == '__main__':

@@ -7,6 +7,7 @@ import numpy as np
 from copy import copy
 import display.waveTexture as wt
 from random import randint
+from view import View
 
 _loctypes = {0:'water',
              1:'plains',
@@ -139,9 +140,21 @@ def wdist(loc1,loc2):
     
 #test
 if __name__ == '__main__':
+    
     board = HexBoard(8,(51,51))
-    loc = (3,3)
-    print board.mapCenter()
+    view = View(board.map)
+    vloc = (3,3)
+    bloc = view.getBoardLoc(vloc)
+
+    print board.loc_type(bloc)
+    view.move((5,5))
+    bloc = view.getBoardLoc(vloc)
+    print board.loc_type(bloc)
+
+    
+
+    
+    
     
                               
         

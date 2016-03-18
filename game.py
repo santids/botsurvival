@@ -1,6 +1,9 @@
 #Game module
 
+
+
 import sys, traceback
+import utils.vect2d as vect
 import pygame as pg
 from pygame.locals import *
 from display import colors,drawing
@@ -8,6 +11,10 @@ from hexboard import HexBoard
 from random import choice, randint, gauss
 from settings import settings
 from math import floor
+from view import View
+
+
+
 
 KNUMS = [K_1,K_2,K_3,K_4,K_5,K_6,K_7,K_8,K_9]
 
@@ -28,6 +35,7 @@ class Game:
         self.gamealive = True
         self.board = HexBoard(settings.radius,(settings.map_size,settings.map_size))
         self.board.padding = settings.padding
+        self.view = View(self.board.size,settings.view_height,settings.view_width)
         self.draw_board()
         self.bots = []
         size = self.board.size[0]-1
@@ -46,44 +54,52 @@ class Game:
                 elif event.type == MOUSEBUTTONDOWN: 
                     self.run_turn()
                     self.turn += 1
-                    pg.display.update()
                 elif event.type == KEYDOWN:
                     if event.key == K_r:
                         self.restart()
                         self.gamealive = False
-                    if event.key == K_ESCAPE:
+                    elif event.key == K_ESCAPE:
                         close()
+                    elif event.key == K_RIGHT:
+                        self.view.move((0,2))
+                    elif event.key == K_LEFT:
+                        self.view.move((0,-2))
+                    elif event.key == K_DOWN:
+                        self.view.move((2,0))
+                    elif event.key == K_UP:
+                        self.view.move((-2,0))
+                    self.draw_board()
+                    self.draw_bots()
+            pg.display.update()
         self.restart()
         close()
         
     def run_turn(self):
         print self.turn
         nl = []
+        self.erase_bots()
         for loc in self.bots:
             try:
-                self.draw_tile(loc,self.get_color(loc))
-                loc = choice(self.board.locs_around(loc,['water','mountain']))
-                nl.append(loc)
-                self.draw_tile(loc,colors.cyan5,settings.radius*0.6,False)
-            except IndexError:
-                pass
-                
+                nl.append(choice(self.board.locs_around(loc,['water','mountain'])))
+            except IndexError as err:
+                print err
         self.bots = nl
+        self.draw_bots()
 
         
         if self.turn >= settings.max_turns:
             self.gamealive = False
             
     def draw_board(self):
-
         color = colors.gray5
-        
-        for loc in self.board.alllocs:
-            #print self.board.map[loc]
-            
+        size = self.view.getSize()
+        loc_list = ((x,y) for x in xrange(size[0]) for y in xrange(size[1]))
 
-            color = self.get_color(loc)
-            self.draw_tile(loc,color)
+        for vloc in loc_list:
+            #print self.board.map[loc]
+            bloc = self.view.getBoardLoc(vloc)
+            color = self.get_color(bloc)
+            self.draw_tile(vloc,color)
             
     def draw_tile(self,loc,color,radius=settings.radius,contorno=True):
         cpoint = self.board.centerPoint(loc)
@@ -92,6 +108,18 @@ class Game:
         pg.draw.polygon(self.screen,color,hexa)
         if contorno:
             pg.draw.lines(self.screen,colors.black,True,hexa,1)
+    def draw_bots(self):
+        for loc in self.bots:
+            vloc = self.view.getViewLoc(loc)
+            if vect.isInsideRect(vloc,self.view.getSize()):
+                self.draw_tile(vloc,colors.cyan5,settings.radius*0.6,False)
+    def erase_bots(self):
+        for loc in self.bots:
+            vloc = self.view.getViewLoc(loc)
+            if vect.isInsideRect(vloc,self.view.getSize()):
+                color = self.get_color(loc)
+                self.draw_tile(vloc,color)
+                
     def get_color(self,loc):
         loctype = self.board.loc_type(loc)
         if loctype== 'walk':
@@ -112,7 +140,7 @@ class Game:
         else:
             raise ValueError('not color for that loc: '+str(loc)+loctype)
 
-
+        
     
             
 def close():

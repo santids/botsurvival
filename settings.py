@@ -9,15 +9,19 @@ class Settings(dict):
 settings = Settings({
     #game play
     'max_turns':500,
-    'map_size':20,
+
+    #map settings
+    'map_size':200,
     'map_src':'assets/maps/default.npy',
     'map_seed':216,
 
     #display
-    'scr_width':1100,
-    'scr_height':800,
+    'view_width':40,
+    'view_height':30,
+    'scr_width':800,
+    'scr_height':600,
     'fullscreen':False , #FULLSCREEN or 0
-    'radius':15,
+    'radius':9,
     'padding':30,
     'fps':60,
 
